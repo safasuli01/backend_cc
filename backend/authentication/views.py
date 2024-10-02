@@ -1,5 +1,5 @@
-from authentication.models import User
-from authentication.serializers import UserSerializer
+from .models import User
+from .serializers import UserSerializer
 from django.contrib.auth import authenticate, login
 from rest_framework import status
 from rest_framework.response import Response
