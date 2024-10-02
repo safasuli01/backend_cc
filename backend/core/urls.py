@@ -10,6 +10,7 @@ urlpatterns = [
     path('api/auth/login', UserLoginView.as_view(), name='user-login'),
     path('api/auth/logout', UserLogoutView.as_view(), name='user-logout'),
     #individual
+    path('api/auth/register/individual/', IndividualRegistrationView.as_view(), name='individual-registration'),
 
     #company
 
