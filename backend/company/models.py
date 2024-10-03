@@ -13,7 +13,7 @@ class Company(models.Model):
     company_name = models.CharField(max_length=20)
     logo = models.ImageField(upload_to="company_logos", blank=True, null=True)
     industry = models.CharField(max_length=100, blank=True, null=True)
-    registration_id = models.CharField(max_length=14, unique=True)
+    registration_id = models.CharField(max_length=14, unique=True, blank=True, null=True)
     registration_document = models.FileField(upload_to='company_documents/', blank=True, null=True)
     phone_number = models.CharField(max_length=11, validators=[validate_phone_validator], blank=True, null=True)
     location = models.CharField(max_length=200)

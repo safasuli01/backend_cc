@@ -1,10 +1,10 @@
 from rest_framework import serializers
 from .models import Company
 from authentication.serializers import UserSerializer
-
+from authentication.models import User
 
 class CompanySerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
+    user = UserSerializer()
 
     class Meta:
         model = Company
