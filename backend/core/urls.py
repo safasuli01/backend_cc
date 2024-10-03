@@ -1,6 +1,6 @@
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from authentication.views import *
 from individual.views import *
 from company.views import *
@@ -16,6 +16,7 @@ urlpatterns = [
     path('api/auth/register/individual', IndividualRegistrationView.as_view(), name='individual-registration'),
     #company
     path('api/auth/register/company', CompanyRegistrationView.as_view(), name='company-registration'),
-
+    #job
+    path('api/job/', include('job.urls')),
 
 ]
