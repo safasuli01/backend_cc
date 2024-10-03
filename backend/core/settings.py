@@ -29,9 +29,10 @@ INSTALLED_APPS = [
     #third_party
     'rest_framework',
     'rest_framework.authtoken',
-
     #apps
     'authentication.apps.AuthenticationConfig',
+    'individual',
+    'company',
 ]
 
 AUTH_USER_MODEL = 'authentication.User'
