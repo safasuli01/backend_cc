@@ -20,4 +20,4 @@ class Company(models.Model):
     company_type = models.BooleanField(default=False, help_text="Select if the company is client based or not .")
 
     def __str__(self):
-        return f"{self.company.company_name}"
+        return f"{self.company_name}"
