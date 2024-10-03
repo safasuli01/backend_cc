@@ -2,6 +2,9 @@
 from django.contrib import admin
 from django.urls import path
 from authentication.views import *
+from individual.views import *
+from company.views import *
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -10,9 +13,9 @@ urlpatterns = [
     path('api/auth/login', UserLoginView.as_view(), name='user-login'),
     path('api/auth/logout', UserLogoutView.as_view(), name='user-logout'),
     #individual
-    path('api/auth/register/individual/', IndividualRegistrationView.as_view(), name='individual-registration'),
-
+    path('api/auth/register/individual', IndividualRegistrationView.as_view(), name='individual-registration'),
     #company
+    path('api/auth/register/company', CompanyRegistrationView.as_view(), name='company-registration'),
 
 
 ]

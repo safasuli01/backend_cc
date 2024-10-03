@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Individual
-from backend.authentication.serializers import UserSerializer
+from authentication.serializers import UserSerializer
 
 class IndividualSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)

@@ -19,11 +19,6 @@ class Individual(models.Model):
         message="This is not a valid Egyptian phone number."
     )
 
-    validate_nid_validator = RegexValidator(
-        regex=r'^01[0-2,5]{1}[0-9]{8}$',
-        message="This is not a valid Egyptian phone number."
-    )
-
     validate_national_id = RegexValidator(
         regex=r'^\d{14}$',
         message="National ID must be exactly 14 digits."
@@ -35,7 +30,7 @@ class Individual(models.Model):
     date_of_birth = models.DateField(null=True, blank=True)
     gender = models.CharField(max_length=6, choices=GENDER_CHOICES)
     specialization = models.CharField(max_length=100, blank=True, null=True)
-    national_id = models.CharField(max_length=14, unique=True, validators=validate_national_id)
+    national_id = models.CharField(max_length=14, unique=True, validators=[validate_national_id])
     account_type = models.CharField(max_length=10, choices=ACCOUNT_TYPE_CHOICES)
     phone_number = models.CharField(max_length=11, validators=[validate_phone_validator], blank=True, null=True)
 
