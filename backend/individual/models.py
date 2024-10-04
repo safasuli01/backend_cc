@@ -5,13 +5,13 @@ from authentication.models import User
 # Create your models here.
 class Individual(models.Model):
     ACCOUNT_TYPE_CHOICES = [
-        ('hiring','Hiring'),
-        ('seeking','Seeking'),
+        ('hiring', 'Hiring'),
+        ('seeking', 'Seeking'),
     ]
 
     GENDER_CHOICES = [
-        ('male','Male'),
-        ('female','Female'),
+        ('male', 'Male'),
+        ('female', 'Female'),
     ]
 
     validate_phone_validator = RegexValidator(
@@ -35,4 +35,4 @@ class Individual(models.Model):
     phone_number = models.CharField(max_length=11, validators=[validate_phone_validator], blank=True, null=True)
 
     def __str__(self):
-        return f"{self.user.first_name} {self.user.last_name}"  # Corrected access to user fields
+        return f"{self.user.first_name} {self.user.last_name}"

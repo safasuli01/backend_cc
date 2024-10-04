@@ -10,12 +10,12 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     #auth
     path('api/auth/register', UserRegistrationView.as_view(), name='user-registration'),
-    path('api/auth/login', UserLoginView.as_view(), name='user-login'),
+    path('api/auth/login/', UserLoginView.as_view(), name='user-login'),
     path('api/auth/logout', UserLogoutView.as_view(), name='user-logout'),
     #individual
-    path('api/auth/register/individual', IndividualRegistrationView.as_view(), name='individual-registration'),
+    path('api/auth/register/individual/', IndividualRegistrationView.as_view(), name='individual-registration'),
     #company
-    path('api/auth/register/company', CompanyRegistrationView.as_view(), name='company-registration'),
+    path('api/auth/register/company/', CompanyRegistrationView.as_view(), name='company-registration'),
     #job
     path('api/job/', include('job.urls')),
 

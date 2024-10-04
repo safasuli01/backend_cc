@@ -8,10 +8,13 @@ class IndividualSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Individual
-        fields = '__all__'
+        fields = ['user', 'date_of_birth', 'gender', 'phone_number', 'specialization', 'national_id', 'account_type']
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')
-        user = User.objects.create_user(**user_data)
+        user_serializer = UserSerializer(data=user_data)
+        user_serializer.is_valid(raise_exception=True)
+        user = user_serializer.save()  # Create and save the User object
+
         individual = Individual.objects.create(user=user, **validated_data)
         return individual

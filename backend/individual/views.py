@@ -19,36 +19,35 @@ class IndividualRegistrationView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print(serializer.errors)  # Log the errors to debug
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # Update Login view
 class UserLoginView(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
-        username = request.data.get('username')
+        # Fetch the username and password from the request data
+        username = request.data.get('username')  # This could be the email
         password = request.data.get('password')
 
+        # Authenticate the user
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            login(request, user)
+            login(request, user)  # Log the user in
+
+            # Get or create the token for the user
             token, created = Token.objects.get_or_create(user=user)
-            if created:
-                token.delete()  # Delete the token if it was already created
+            if not created:
+                token.delete()
                 token = Token.objects.create(user=user)
 
+            # Prepare the response data
             response_data = {
                 'token': token.key,
                 'username': user.username,
                 'role': user.role,
             }
 
-            if user.role == 'student':
-                student = user.student_account  # Assuming the related name is "student_account"
-                if student is not None:
-                    # Add student data to the response data
-                    individual_data = IndividualSerializer(individual).data
-                    response_data['data'] = individual_data
-
-            return Response(response_data)
+            return Response(response_data, status=status.HTTP_200_OK)
         else:
-            return Response({'message': 'Invalid username or password'})
+            return Response({'message': 'Invalid username or password'}, status=status.HTTP_400_BAD_REQUEST)
