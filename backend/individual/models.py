@@ -5,7 +5,7 @@ from authentication.models import User
 # Create your models here.
 class Individual(models.Model):
     ACCOUNT_TYPE_CHOICES = [
-        ('hiring', 'Hiring'),
+        ('client', 'Client'),
         ('seeking', 'Seeking'),
     ]
 
