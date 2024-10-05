@@ -24,4 +24,7 @@ urlpatterns = [
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+    #OTP
+    path('otp/send-otp/', SendOTPView.as_view(), name='send_otp'),
+    path('otp/verify-otp/', VerifyOTPView.as_view(), name='verify_otp'),
 ]
