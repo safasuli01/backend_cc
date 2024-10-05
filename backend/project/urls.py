@@ -1,8 +1,9 @@
 from django.urls import path
-from .views import ProjectCreateView, ProjectListView, ProjectDetailView
+from .views import *
 
 urlpatterns = [
-    path('create/', ProjectCreateView.as_view(), name='project-create'),  # URL to create a project
-    path('list/', ProjectListView.as_view(), name='project-list'),        # URL to list all projects by a company
-    path('<int:project_id>/', ProjectDetailView.as_view(), name='project-detail'),  # URL to get, update, or delete a specific project
+    path('projects/', project_list, name='project_list'),  # Lists all projects, or creates a new projects
+     path('projects/<int:id>/', project_detail, name='project_detail'),
+    path('projects/<int:id>/update/', project_update, name='project_update'),  # Updates a specific project
+    path('projects/<int:id>/delete/', project_delete, name='project_delete'),  # Deletes a specific project
 ]
