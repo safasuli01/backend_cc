@@ -65,9 +65,10 @@ def job_delete(request, id):
 
     job.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+
 # serch view by location&title
 @api_view(['GET'])
-def serch_job(request):
+def search_job(request):
     title = request.query_params.get('title', None)
     location = request.query_params.get('location', None)
     jobs = Job.objects.all()
