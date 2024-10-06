@@ -18,7 +18,7 @@ urlpatterns = [
     # path('api/auth/register/individual/', IndividualRegistrationView.as_view(), name='individual-registration'),
     path('individual/', include('individual.urls')),
     #company
-    path('api/auth/register/company/', CompanyRegistrationView.as_view(), name='company-registration'),
+    path('company/', include('company.urls')),
 
     #job
     path('api/job/', include('job.urls')),
