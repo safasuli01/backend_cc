@@ -10,19 +10,17 @@ from .serializers import JobSerializer
 from .models import Job
 from rest_framework.decorators import api_view
 
-# Create your views here.
-class JobCreateView(APIView):
+@api_view(['POST'])
+def job_create(request):
     # permission_classes = [IsAuthenticated]
+    serializer = JobSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        # serializer.save(author=request.user.company) #will be added after adding athuntictions
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def post(self, request):
-        serializer = JobSerializer(data=request.data)
-        if serializer.is_valid():
-            # Assign the company (author) from the authenticated user
-            serializer.save(author=request.user.company)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-@api_view(['GET', 'POST'])
+@api_view(['GET'])
 def job_list(request):
     # permission_classes = [IsAuthenticated]
     if request.method == 'GET':
@@ -31,11 +29,6 @@ def job_list(request):
         serializer = JobSerializer(jobs, many=True)
         return Response(serializer.data)
     
-    if request.method == 'POST':
-        serializer = JobSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
         
 @api_view(['GET'])
 def job_detail(request, id):
