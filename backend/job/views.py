@@ -65,3 +65,18 @@ def job_delete(request, id):
 
     job.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+# serch view by location&title
+@api_view(['GET'])
+def serch_job(request):
+    title = request.query_params.get('title', None)
+    location = request.query_params.get('location', None)
+    jobs = Job.objects.all()
+    if title:
+        jobs = jobs.filter(title__icontains=title)
+    if location:
+        jobs = jobs.filter(location__icontains=location)
+
+
+    # Serialize the filtered companies
+    serializer = JobSerializer(jobs, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
