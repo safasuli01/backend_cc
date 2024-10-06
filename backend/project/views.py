@@ -11,7 +11,7 @@ from rest_framework.decorators import api_view
 from rest_framework import generics
 
 
-class ProjectList(generics.ListCreateAPIView)
+class ProjectList(generics.ListCreateAPIView):
     queryset = Project.objects.all() 
     serializer_class = ProjectSerializer 
     name = 'project-list'
@@ -30,14 +30,14 @@ def project_create(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# @api_view(['GET'])
-# def project_list(request):
-#     # permission_classes = [IsAuthenticated]
-#     if request.method == 'GET':
-#         # Get all projects authored by the current user's company
-#         projects = Project.objects.all()
-#         serializer = ProjectSerializer(projects, many=True)
-#         return Response(serializer.data)
+@api_view(['GET'])
+def project_list(request):
+    # permission_classes = [IsAuthenticated]
+    if request.method == 'GET':
+        # Get all projects authored by the current user's company
+        projects = Project.objects.all()
+        serializer = ProjectSerializer(projects, many=True)
+        return Response(serializer.data)
 
         
 @api_view(['GET'])
