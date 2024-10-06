@@ -143,3 +143,7 @@ DEFAULT_FROM_EMAIL = 'safa.suli.2@gmail.com'
 
 
 PASSWORD_RESET_TIMEOUT = 14400
+
+# MEDIA
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
