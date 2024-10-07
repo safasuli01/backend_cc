@@ -1,58 +1,3 @@
-# from django.shortcuts import render
-# from rest_framework.views import APIView
-# from .serializers import CompanySerializer
-# from rest_framework.response import Response
-# from rest_framework import status
-# from authentication.models import User
-# from .models import Company
-# from django.contrib.auth import authenticate, login
-# from rest_framework.views import APIView
-# from rest_framework.authtoken.views import ObtainAuthToken
-# from rest_framework.authtoken.models import Token
-# from rest_framework.permissions import IsAuthenticated
-#
-#
-# # Create your views here.
-# class CompanyRegistrationView(APIView):
-#     def post(self, request):
-#         serializer = CompanySerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#
-#
-# # Update Login view
-# class UserLoginView(ObtainAuthToken):
-#     def post(self, request, *args, **kwargs):
-#         username = request.data.get('username')
-#         password = request.data.get('password')
-#
-#         user = authenticate(request, username=username, password=password)
-#         if user is not None:
-#             login(request, user)
-#             token, created = Token.objects.get_or_create(user=user)
-#             if created:
-#                 token.delete()  # Delete the token if it was already created
-#                 token = Token.objects.create(user=user)
-#
-#             response_data = {
-#                 'token': token.key,
-#                 'username': user.username,
-#                 'role': user.role,
-#             }
-#
-#             if user.role == 'student':
-#                 student = user.student_account  # Assuming the related name is "student_account"
-#                 if student is not None:
-#                     # Add student data to the response data
-#                     individual_data = CompanySerializer(company).data
-#                     response_data['data'] = individual_data
-#
-#             return Response(response_data)
-#         else:
-#             return Response({'message': 'Invalid username or password'})
-
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -60,13 +5,12 @@ from rest_framework import status
 from .models import Company
 from .serializers import CompanySerializer
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.authtoken.models import Token
-from django.contrib.auth import get_user_model
+
+from rest_framework.permissions import AllowAny  # Import AllowAny permission
 
 # Get companies & create company:
 @api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])  # Allow unauthenticated access for GET requests
 def list_company(request):
     if request.method == 'GET':
         companies = Company.objects.all()
@@ -80,46 +24,85 @@ def list_company(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# Company details, update, and delete:
-@api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([IsAuthenticated])
+# Retrieve company details
+@api_view(['GET'])
 def company_detail(request, id):
     company = get_object_or_404(Company, pk=id)
+    serializer = CompanySerializer(company)
+    return Response(serializer.data)
 
-    if request.method == 'GET':  # Retrieve company details
-        serializer = CompanySerializer(company)
+# Update company
+@api_view(['PUT'])
+def update_company(request, id):
+    company = get_object_or_404(Company, pk=id)
+    serializer = CompanySerializer(company, data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
         return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    elif request.method == 'PUT':  # Update company
-        serializer = CompanySerializer(company, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# Delete company
+@api_view(['DELETE'])
+def delete_company(request, id):
+    company = get_object_or_404(Company, pk=id)
+    company.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
-    elif request.method == 'DELETE':  # Delete company
-        company.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+@api_view(['POST'])
+@permission_classes([AllowAny])  # Allow unauthenticated access for login
+def company_login_view(request):
+    username = request.data.get('username')  # Username (could also be email)
 
-# User Login view allowing token retrieval with only the username
-class UserLoginView(ObtainAuthToken):
-    def post(self, request, *args, **kwargs):
-        username = request.data.get('username')
+    # Authenticate the user
+    user = authenticate(request, username=username)
+    
+    if user is not None:
+        # Ensure the user has an associated company
+        try:
+            company = Company.objects.get(user=user)
+        except Company.DoesNotExist:
+            return Response({'message': 'No company associated with this user.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Use get_user_model() to get the user model
-        User = get_user_model()
-        user = User.objects.filter(username=username).first()
+        login(request, user)  # Log the user in
 
-        if user is not None:
-            # Create or retrieve the token for the user
-            token, created = Token.objects.get_or_create(user=user)
+        # Get or create the token for the user
+        token, created = Token.objects.get_or_create(user=user)
+        if not created:
+            token.delete()
+            token = Token.objects.create(user=user)
 
-            response_data = {
-                'token': token.key,
-                'username': user.username,
-                'role': user.role,
-            }
+        # Prepare the response data with company details
+        response_data = {
+            'token': token.key,
+            'username': user.username,
+            'company_name': company.company_name,
+            'industry': company.industry,
+            'location': company.location,
+            'role': user.role if hasattr(user, 'role') else None,
+        }
 
-            return Response(response_data, status=status.HTTP_200_OK)
-        else:
-            return Response({'message': 'Invalid username'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(response_data, status=status.HTTP_200_OK)
+    else:
+        return Response({'message': 'Invalid username or password'}, status=status.HTTP_400_BAD_REQUEST)
+
+# Search view for companies by company_name, location, and industry
+@api_view(['GET'])
+@permission_classes([AllowAny])  # Allow unauthenticated access for searching
+def search_company(request):
+    company_name = request.query_params.get('company_name', None)
+    location = request.query_params.get('location', None)
+    industry = request.query_params.get('industry', None)
+
+    companies = Company.objects.all()
+
+    if company_name:
+        companies = companies.filter(company_name__icontains=company_name)
+    if location:
+        companies = companies.filter(location__icontains=location)
+    if industry:
+        companies = companies.filter(industry__icontains=industry)
+
+    # Serialize the filtered companies
+    serializer = CompanySerializer(companies, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)

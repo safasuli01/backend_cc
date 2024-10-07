@@ -24,9 +24,8 @@ class Individual(models.Model):
         message="National ID must be exactly 14 digits."
     )
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=20)
-    last_name = models.CharField(max_length=20)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)  # Temporarily make it nullable
+ 
     date_of_birth = models.DateField(null=True, blank=True)
     gender = models.CharField(max_length=6, choices=GENDER_CHOICES)
     specialization = models.CharField(max_length=100, blank=True, null=True)

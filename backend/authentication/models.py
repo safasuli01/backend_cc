@@ -13,6 +13,8 @@ class User(AbstractUser):
 
     role = models.CharField(max_length=15, choices=ROLE_CHOICES)
     email = models.EmailField(unique=True)
+    first_name = models.CharField(max_length=200, blank=True, null=True) 
+    last_name = models.CharField(max_length=200, blank=True, null=True)
 
 
 class OTP(models.Model):

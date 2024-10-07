@@ -51,6 +51,11 @@
 #             return Response(response_data, status=status.HTTP_200_OK)
 #         else:
 #             return Response({'message': 'Invalid username or password'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
 from .models import Individual
 from .serializers import IndividualSerializer
 from django.http import JsonResponse
@@ -75,10 +80,12 @@ def list_individual(request, format=None):
         return Response(serializer.data)
 
     if request.method == 'POST':
+        print("Received data:", request.data)
         serializer = IndividualSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print("Errors:", serializer.errors)  # Print the validation errors
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -133,3 +140,84 @@ def user_login_view(request):
         return Response(response_data, status=status.HTTP_200_OK)
     else:
         return Response({'message': 'Invalid username or password'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
+
+
+
+# from .models import Individual
+# from .serializers import IndividualSerializer
+# from rest_framework import status
+# from rest_framework.decorators import api_view
+# from rest_framework.response import Response
+# from rest_framework.permissions import IsAuthenticated
+# from django.contrib.auth import authenticate, login
+# from rest_framework.authtoken.models import Token
+
+# # Create your views here.
+
+# @api_view(['GET', 'POST'])
+# def list_individual(request):
+#     if request.method == 'GET':
+#         individuals = Individual.objects.all()
+#         serializer = IndividualSerializer(individuals, many=True)
+#         return Response(serializer.data)
+
+#     elif request.method == 'POST':
+#         print("Received data:", request.data)  # Log incoming request data
+#         serializer = IndividualSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         print("Errors:", serializer.errors)  # Log validation errors
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# @api_view(["GET", "PUT", "DELETE"])
+# def individual_detail(request, id):
+#     try:
+#         individual = Individual.objects.get(pk=id)
+#     except Individual.DoesNotExist:
+#         return Response(status=status.HTTP_404_NOT_FOUND)
+
+#     if request.method == 'GET':
+#         serializer = IndividualSerializer(individual)
+#         return Response(serializer.data)
+
+#     elif request.method == 'PUT':
+#         serializer = IndividualSerializer(individual, data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#     elif request.method == 'DELETE':
+#         individual.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
+
+# @api_view(['POST'])
+# def user_login_view(request):
+#     username = request.data.get('username')  # Could be the email
+#     password = request.data.get('password')
+
+#     # Authenticate the user
+#     user = authenticate(request, username=username, password=password)
+#     if user is not None:
+#         login(request, user)  # Log the user in
+
+#         # Get or create the token for the user
+#         token, created = Token.objects.get_or_create(user=user)
+
+#         # Prepare the response data
+#         response_data = {
+#             'token': token.key,
+#             'username': user.username,
+#             'role': user.role,  # Make sure 'role' exists on User model
+#         }
+
+#         return Response(response_data, status=status.HTTP_200_OK)
+#     else:
+#         return Response({'message': 'Invalid username or password'}, status=status.HTTP_400_BAD_REQUEST)
