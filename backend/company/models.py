@@ -15,7 +15,7 @@ class Company(models.Model):
     registration_documents = models.FileField(upload_to='registration_docs/', blank=True, null=True)
     phone_number = models.CharField(max_length=11, validators=[validate_phone_validator], blank=True, null=True)
     location = models.CharField(max_length=200)
-    logo = models.ImageField(upload_to="company_logos", blank=True, null=True)
+    # logo = models.ImageField(upload_to="company_logos", blank=True, null=True)
     client_base = models.BooleanField(default=False, help_text="Select if the company is client based or not .")
 
     def __str__(self):
