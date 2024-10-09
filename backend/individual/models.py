@@ -72,5 +72,17 @@ class Individual(models.Model):
     account_type = models.CharField(max_length=10, choices=ACCOUNT_TYPE_CHOICES)
     phone_number = models.CharField(max_length=11, validators=[validate_phone_validator], blank=True, null=True)
 
+    age = models.PositiveIntegerField(null=True, blank=True)  # Calculate from date_of_birth
+    years_of_experience = models.PositiveIntegerField(null=True, blank=True)
+    profile_image = models.ImageField(upload_to='profiles/', null=True, blank=True)
+    skills = models.TextField(blank=True, null=True)  # Use a comma-separated format for multiple skills
+
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+
+    def calculate_age(self):
+        from datetime import date
+        if self.date_of_birth:
+            today = date.today()
+            return today.year - self.date_of_birth.year - ((today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day))
+        return None
