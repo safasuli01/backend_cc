@@ -7,8 +7,6 @@ from company.views import *
 from django.contrib.auth import views as auth_views
 from django.conf import settings
 
-
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     #auth
