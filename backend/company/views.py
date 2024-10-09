@@ -178,22 +178,30 @@ class CompanyRegistrationView(APIView):
 @api_view(['GET'])
 @permission_classes([AllowAny])  # Allow unauthenticated access for searching
 def search_company(request):
-    # user_name = request.query_params.get('company_name', None)
+    # Get query parameters
+    company_name = request.query_params.get('company_name', None)  # Renamed from user_name to company_name for clarity
     location = request.query_params.get('location', None)
     industry = request.query_params.get('industry', None)
 
+    # Start with all companies
     companies = Company.objects.all()
 
+    # Filter by related User's username if company_name is provided
     if company_name:
-        companies = companies.filter(company_name__icontains=company_name)
+        companies = companies.filter(user__username__icontains=company_name)  # Search by user.username
+
+    # Filter by location if provided
     if location:
         companies = companies.filter(location__icontains=location)
+
+    # Filter by industry if provided
     if industry:
         companies = companies.filter(industry__icontains=industry)
 
     # Serialize the filtered companies
     serializer = CompanySerializer(companies, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 # Get allcompanies :
 @api_view(['GET'])
@@ -203,3 +211,40 @@ def list_company(request):
         companies = Company.objects.all()
         serializer = CompanySerializer(companies, many=True)
         return Response(serializer.data)
+    
+
+    
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def company_update(request, id):
+    try:
+        company = Company.objects.get(pk=id)
+    except Company.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    # Ensure that the user is the owner of the profile
+    if company.user != request.user:
+        return Response({'detail': 'You do not have permission to edit this profile.'}, status=status.HTTP_403_FORBIDDEN)
+
+    serializer = CompanySerializer(company, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def company_delete(request, id):
+    try:
+        company = Company.objects.get(pk=id)
+    except Company.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    # Ensure that the user is the owner of the profile
+    if company.user != request.user:
+        return Response({'detail': 'You do not have permission to delete this profile.'}, status=status.HTTP_403_FORBIDDEN)
+
+    company.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+

@@ -29,4 +29,7 @@ urlpatterns = [
     path('activate/<uidb64>/', activate, name='activate-company'),  # Ensure this matches with the send_activation_email
     path('search/', search_company, name='company-search'),
     path('list/', list_company, name='company-list'),
+    path('update/<int:id>/', company_update, name='company-update'),
+    path('delete/<int:id>/', company_delete, name='company-delete'),
 ]
+# id here will be the company id 
