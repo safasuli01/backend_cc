@@ -5,6 +5,15 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = '__all__'
+        read_only_field = ['author']
+
+    def create(self, validated_data):
+        # Automatically assign the logged-in user as the author
+        request = self.context.get('request', None)
+        if request and hasattr(request, 'user'):
+            individual = request.user.individual  # Assuming `Individual` is linked via OneToOneField to `User`
+            validated_data['author'] = individual
+        return super().create(validated_data)
 
     # class Meta:
     #     model = Project
