@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'company.apps.CompanyConfig',
     'job.apps.JobConfig',
     'project.apps.ProjectConfig',
+    'application',
 ]
 
 # CORS_ALLOW_ALL_ORIGINS = True
