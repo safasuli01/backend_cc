@@ -17,7 +17,7 @@ class Job(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
     industry = models.CharField(max_length=100, blank=True, null=True)
-    # author = models.ForeignKey(Company, on_delete=models.CASCADE)
+    author = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
     post_status = models.CharField(max_length=100, choices=STATUS, default="Active")
     # created_at = models.DateTimeField(auto_now_add=True)
     location = models.CharField(max_length=200,  blank=True, null=True)

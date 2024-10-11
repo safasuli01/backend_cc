@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-zem$8m-f-p-m4)2y8*r82yk6#vi7z*g0t#6r4v&z3pxy^b7a58'
+SECRET_KEY = 'django-insecure-&t^iv98^sty4h80*m1yk*s=6n77w4&rn!cc5)_p!ha%3k8*4u9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -26,51 +26,57 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #third_party
+    # third_party
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
-    'django_filters',
-    #apps
+    # custom apps
     'authentication.apps.AuthenticationConfig',
-    'individual.apps.IndividualConfig',
     'company.apps.CompanyConfig',
+    'individual.apps.IndividualConfig',
     'job.apps.JobConfig',
     'project.apps.ProjectConfig',
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
+
+# CORS_ALLOW_ALL_ORIGINS = True
+
 
 AUTH_USER_MODEL = 'authentication.User'
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000", 
+    "http://127.0.0.1:3000",  # Add your frontend domain
+]
+CORS_ALLOW_CREDENTIALS = True
+
+
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
-    'DEFAULT_FILTER_BACKENDS': [
-        'django_filters.rest_framework.DjangoFilterBackend',
-    ],
 }
-
-
+authToken:"e6f16cfe4c4bbebea68307fb5c3eaef2a19d4d11"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',]
-
+    'corsheaders.middleware.CorsMiddleware',
+]
 
 ROOT_URLCONF = 'core.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -95,6 +101,8 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+
 
 
 # Password validation
@@ -137,6 +145,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 #Reset Password Email Confirmation
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -151,4 +160,3 @@ PASSWORD_RESET_TIMEOUT = 14400
 
 # MEDIA
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'

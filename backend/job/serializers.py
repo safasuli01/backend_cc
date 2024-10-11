@@ -2,9 +2,16 @@ from rest_framework import serializers
 from .models import Job
 
 class JobSerializer(serializers.ModelSerializer):
+    author_username = serializers.SerializerMethodField()
+
     class Meta:
         model = Job
         fields = '__all__'
+        read_only_fields = ['author']
+    
+    def get_author_username(self, obj):
+        return obj.author.user.username if obj.author and obj.author.user else None
+
 
     # class Meta:
     #     model = Job
