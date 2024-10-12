@@ -93,3 +93,38 @@ def list_individual(request):
         individuals = Individual.objects.all()
         serializer = IndividualSerializer(individuals, many=True)
         return Response(serializer.data)
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def individual_update(request, id):
+    try:
+        individual = Individual.objects.get(pk=id)
+    except Individual.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    # Ensure that the user is the owner of the profile
+    if individual.user != request.user:
+        return Response({'detail': 'You do not have permission to edit this profile.'}, status=status.HTTP_403_FORBIDDEN)
+
+    serializer = IndividualSerializer(individual, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def individual_delete(request, id):
+    try:
+        individual = Individual.objects.get(pk=id)
+    except Individual.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    # Ensure that the user is the owner of the profile
+    if individual.user != request.user:
+        return Response({'detail': 'You do not have permission to delete this profile.'}, status=status.HTTP_403_FORBIDDEN)
+
+    individual.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+

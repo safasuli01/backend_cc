@@ -18,18 +18,18 @@ class IndividualSerializer(serializers.ModelSerializer):
         individual = Individual.objects.create(user=user, **validated_data)
         return individual
 
-    # def update(self, instance, validated_data):
-    #     user_data = validated_data.pop('user', None)
-        
-    #     # Update user only if user_data is provided
-    #     if user_data:
-    #         user_serializer = UserSerializer(instance.user, data=user_data, partial=True)
-    #         user_serializer.is_valid(raise_exception=True)
-    #         user_serializer.save()
+    def update(self, instance, validated_data):
+        user_data = validated_data.pop('user', None)
 
-    #     # Update the individual instance with the rest of the validated data
-    #     for attr, value in validated_data.items():
-    #         setattr(instance, attr, value)
+        # Update user only if user_data is provided
+        if user_data:
+            user_serializer = UserSerializer(instance.user, data=user_data, partial=True)
+            user_serializer.is_valid(raise_exception=True)
+            user_serializer.save()
 
-    #     instance.save()
-    #     return instance
+        # Update the individual instance with the rest of the validated data
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+        return instance
