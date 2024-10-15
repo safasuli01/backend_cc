@@ -66,47 +66,24 @@ def get_csrf_token(request):
     csrf_token = get_token(request)
     return Response({'csrfToken': csrf_token})
 
-# class UserLoginView(ObtainAuthToken):
-#     def post(self, request, *args, **kwargs):
-#         username = request.data.get('username')
-#         password = request.data.get('password')
-
-#         user = authenticate(request, username=username, password=password)
-
-#         if user is not None:
-#             login(request, user)
-#             token, created = Token.objects.get_or_create(user=user)
-
-#             response_data = {
-#                 'token': token.key,
-#             }
-
-#             if user.role == 'company':
-#                 try:
-#                     company = Company.objects.get(user=user)
-#                     response_data['user'] = CompanySerializer(company).data
-#                 except Company.DoesNotExist:
-#                     return Response({'message': 'Company profile not found'}, status=status.HTTP_404_NOT_FOUND)
-
-#             return Response(response_data)
-
-#         return Response({'message': 'Invalid username or password'}, status=status.HTTP_401_UNAUTHORIZED)
 
 class UserLogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        print(request.headers) 
-        token_key = request.auth.key
-        token = Token.objects.get(key=token_key)
-        token.delete()
-
-        return Response({'detail': 'Successfully logged out.'})
-
-
-
-
-
+        # Debugging: print headers to see if the token is being passed correctly
+        print(f"Request Headers: {request.headers}")
+        try:
+            token_key = request.auth.key
+            print(f"Token Key: {token_key}")
+            token = Token.objects.get(key=token_key)
+            token.delete()
+            return Response({'detail': 'Successfully logged out.'}, status=status.HTTP_200_OK)
+        except Token.DoesNotExist:
+            return Response({'detail': 'Token not found.'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print(f"Error during logout: {e}")  # Print error for debugging
+            return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class UserLoginView(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
@@ -125,20 +102,18 @@ class UserLoginView(ObtainAuthToken):
 
             response_data = {
                 'token': token.key,
+                'user': {'id': user.id, 'username': user.username, 'role': user.role}, # Add user role to response
             }
 
             # If the user is a company, fetch the company profile
             if user.role == 'company':
                 try:
                     company = Company.objects.get(user=user)
-                    response_data['user'] = CompanySerializer(company).data
+                    response_data['company'] = CompanySerializer(company).data
                 except Company.DoesNotExist:
                     return Response({'message': 'Company profile not found'}, status=status.HTTP_404_NOT_FOUND)
-            else:
-                # You can add handling for other roles here if needed, or return user data
-                response_data['user'] = {'username': user.username, 'email': user.email}
 
-            return Response(response_data)
+            return Response(response_data, status=status.HTTP_200_OK)  # Add success status code
 
         # If authentication fails, return unauthorized response
         return Response({'message': 'Invalid username or password'}, status=status.HTTP_401_UNAUTHORIZED)

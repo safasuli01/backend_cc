@@ -36,7 +36,6 @@ INSTALLED_APPS = [
     'individual.apps.IndividualConfig',
     'job.apps.JobConfig',
     'project.apps.ProjectConfig',
-    'application',
 ]
 
 

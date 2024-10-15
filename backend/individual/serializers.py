@@ -20,7 +20,7 @@ class IndividualSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         user_data = validated_data.pop('user', None)
-
+        
         # Update user only if user_data is provided
         if user_data:
             user_serializer = UserSerializer(instance.user, data=user_data, partial=True)

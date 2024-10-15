@@ -16,7 +16,7 @@ from django.utils.encoding import force_bytes, force_str
 from django.urls import reverse
 from django.contrib.auth.models import User
 from .models import Individual
-from .serializers import * 
+from .serializers import *
 from .models import *
 from authentication.models import User
 from django.http import JsonResponse
@@ -42,6 +42,7 @@ def send_activation_email(user, request):
         [user.user.email], 
         fail_silently=False,
     )
+    
 def activate(request, uidb64):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))  
@@ -67,7 +68,28 @@ class IndividualRegistrationView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-api_view(['GET'])
+@api_view(['GET'])
+def author_profile(request, id):
+    try:
+        individual = Individual.objects.get(pk=id)
+        serializer = IndividualSerializer(individual)
+        return Response(serializer.data)
+    except Individual.DoesNotExist:
+        return Response({'error': 'Profile not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+def user_profile(request):
+    if request.user.is_authenticated:
+        try:
+            individual = Individual.objects.get(user=request.user)
+            serializer = IndividualSerializer(individual)
+            return Response(serializer.data)
+        except Individual.DoesNotExist:
+            return Response({"error": "Profile not found"}, status=404)
+    return Response({"error": "Unauthorized"}, status=401)
+
+@api_view(['GET'])
 def search_individual(request):
     username = request.query_params.get('username', None)
     specialization = request.query_params.get('specialization', None)
@@ -99,8 +121,8 @@ def list_individual(request):
 def individual_update(request, id):
     try:
         individual = Individual.objects.get(pk=id)
-    except Individual.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    except (Individual.DoesNotExist, ValueError):
+        return Response({'error': 'Profile not found or invalid ID'}, status=status.HTTP_404_NOT_FOUND)
 
     # Ensure that the user is the owner of the profile
     if individual.user != request.user:
@@ -111,6 +133,7 @@ def individual_update(request, id):
         serializer.save()
         return Response(serializer.data)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 @api_view(['DELETE'])
@@ -127,4 +150,3 @@ def individual_delete(request, id):
 
     individual.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
-

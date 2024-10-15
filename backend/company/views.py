@@ -1,10 +1,11 @@
 
 from django.shortcuts import render, redirect
 from rest_framework import viewsets, status,permissions
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
@@ -67,6 +68,38 @@ class CompanyRegistrationView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
+@api_view(['GET'])
+@permission_classes([AllowAny])  # Allow public access to view any company's profile
+def get_company_profile(request, id=None):
+    try:
+        if id:
+            company = Company.objects.get(pk=id)  # Fetch company by ID
+        else:
+            company = request.user.company  # Fetch the logged-in user's company
+
+        jobs = company.job_set.all()
+        job_data = [{'id': job.id, 'title': job.title} for job in jobs]
+
+        data = {
+            'id': company.id,
+            'user': {
+                'username': company.user.username,
+                'email': company.user.email,
+            },
+            'logo': company.logo.url if company.logo else None,
+            'bio': company.bio,
+            'industry': company.industry,
+            'jobs': job_data,
+        }
+        return Response(data)
+    except Company.DoesNotExist:
+        return Response({'error': 'Company not found'}, status=404)
+    except Exception as e:
+        return Response({'error': str(e)}, status=400)
+
+
+
 @api_view(['GET'])
 @permission_classes([AllowAny])  # Allow unauthenticated access for searching
 def search_company(request):
@@ -88,6 +121,8 @@ def search_company(request):
     serializer = CompanySerializer(companies, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+
 # Get allcompanies :
 @api_view(['GET'])
 @permission_classes([AllowAny])  # Allow unauthenticated access for GET requests
@@ -98,6 +133,7 @@ def list_company(request):
         return Response(serializer.data)
 
 
+
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def company_update(request, id):
@@ -106,7 +142,6 @@ def company_update(request, id):
     except Company.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    # Ensure that the user is the owner of the profile
     if company.user != request.user:
         return Response({'detail': 'You do not have permission to edit this profile.'},
                         status=status.HTTP_403_FORBIDDEN)
@@ -116,6 +151,7 @@ def company_update(request, id):
         serializer.save()
         return Response(serializer.data)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 @api_view(['DELETE'])

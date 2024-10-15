@@ -10,7 +10,11 @@ class JobSerializer(serializers.ModelSerializer):
         read_only_fields = ['author']
     
     def get_author_username(self, obj):
-        return obj.author.user.username if obj.author and obj.author.user else None
+        return obj.author.user.username if obj.author and obj.author.user else None # Access the user's first name through author
+
+
+
+
 
 
     # class Meta:

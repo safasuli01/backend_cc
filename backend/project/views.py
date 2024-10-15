@@ -50,6 +50,7 @@ def project_list(request):
         return Response(serializer.data)
 
 
+
 @api_view(['GET'])
 def project_detail(request, id):
     try:
@@ -62,7 +63,6 @@ def project_detail(request, id):
     # Serialize the project object and return the data
     serializer = ProjectSerializer(project)
     return Response(serializer.data)
-
 
 
 @api_view(['PUT'])

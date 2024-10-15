@@ -8,4 +8,7 @@ urlpatterns = [
     path('list/', list_individual, name='individual-list'),
     path('update/<int:id>/', individual_update, name='individual-update'),
     path('delete/<int:id>/', individual_delete, name='individual-delete'),
-]
+    
+    path('profile/', user_profile, name='user-profile'),  # Add this line
+    path('author-profile/<int:id>/', author_profile, name='author-profile'),
+    ]

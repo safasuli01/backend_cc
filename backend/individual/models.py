@@ -3,6 +3,8 @@ from django.core.validators import RegexValidator
 from authentication.models import User
 
 # Create your models here.
+    
+
 class Individual(models.Model):
     ACCOUNT_TYPE_CHOICES = [
         ('client', 'Client'),
@@ -25,8 +27,6 @@ class Individual(models.Model):
     )
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=20, null=True , blank=True)
-    last_name = models.CharField(max_length=20 , null=True , blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
     gender = models.CharField(max_length=6, choices=GENDER_CHOICES)
     specialization = models.CharField(max_length=100, blank=True, null=True)
@@ -37,15 +37,22 @@ class Individual(models.Model):
     years_of_experience = models.PositiveIntegerField(null=True, blank=True)
     profile_image = models.ImageField(upload_to='profiles/', null=True, blank=True)
     skills = models.TextField(blank=True, null=True)  # Use a comma-separated format for multiple skills
+    bio = models.TextField(blank=True, null=True)
 
-    # def __str__(self):
-    #     return f"{self.user.username}"
+
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
-
+        return f"{self.user.username}"
+    
     def calculate_age(self):
         from datetime import date
         if self.date_of_birth:
             today = date.today()
             return today.year - self.date_of_birth.year - ((today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day))
         return None
+    
+    def save(self, *args, **kwargs):
+        if self.date_of_birth:
+            self.age = self.calculate_age()
+        super(Individual, self).save(*args, **kwargs)
+    
+    

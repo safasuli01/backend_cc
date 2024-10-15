@@ -6,7 +6,6 @@ from company.models import Company
 class Job(models.Model):
     STATUS = (
         ("active", "Active"),
-        ("draft", "Draft"),
         ("disabled", "Disabled"),
     )
     JOB_TYPE_CHOICES = [

@@ -6,7 +6,6 @@ from individual.models import Individual
 class Project(models.Model):
     STATUS = (
         ("active", "Active"),
-        ("draft", "Draft"),
         ("disabled", "Disabled"),
     )
     title = models.CharField(max_length=200)
