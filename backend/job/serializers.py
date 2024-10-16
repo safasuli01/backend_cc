@@ -3,6 +3,7 @@ from .models import Job
 
 class JobSerializer(serializers.ModelSerializer):
     author_username = serializers.SerializerMethodField()
+    company_logo = serializers.SerializerMethodField()
 
     class Meta:
         model = Job
@@ -13,6 +14,8 @@ class JobSerializer(serializers.ModelSerializer):
         return obj.author.user.username if obj.author and obj.author.user else None # Access the user's first name through author
 
 
+    def get_company_logo(self, obj):
+        return obj.author.logo.url if obj.author and obj.author.logo else None
 
 
 
