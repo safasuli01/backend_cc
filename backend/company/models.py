@@ -16,6 +16,7 @@ class Company(models.Model):
     phone_number = models.CharField(max_length=11, validators=[validate_phone_validator], blank=True, null=True)
     location = models.CharField(max_length=200)
     logo = models.ImageField(upload_to="company_logos", blank=True, null=True)
+    cover = models.ImageField(upload_to="company_cover", blank=True, null=True)
     client_base = models.BooleanField(default=False, help_text="Select if the company is client based or not .")
     bio = models.TextField(blank=True, null=True)
     website = models.URLField(max_length=255, blank=True, null=True)

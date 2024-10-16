@@ -13,7 +13,7 @@ class Project(models.Model):
     industry = models.CharField(max_length=100, blank=True, null=True)
     author = models.ForeignKey(Individual, on_delete=models.CASCADE, null=True)
     post_status = models.CharField(max_length=100, choices=STATUS, default="Active", blank=True, null=True)
-    # created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     budget = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     deadline = models.DateField(blank=True, null=True)
 
